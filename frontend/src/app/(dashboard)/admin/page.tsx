@@ -1,47 +1,60 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import { AxiosError, AxiosResponse } from 'axios';
-import { ApiError } from 'next/dist/server/api-utils';
 import React from 'react';
 
-import Button from '@/components/Button';
 import withAuth from '@/components/hoc/withAuth';
 import Table from '@/components/table/Table';
 import Typography from '@/components/Typography';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout';
-import api from '@/lib/api';
-import useDialogStore from '@/stores/useDialogStore';
-import { ApiResponse, ApiReturn } from '@/types/api';
-import { DashboardUser } from '@/types/entities/dashboardUser';
+import { ApiReturn } from '@/types/api';
+import { Bank } from '@/types/entities/user';
 import clsxm from '@/lib/clsxm';
+import { getToken } from '@/lib/cookies';
 
-export default withAuth(DashboardUserPage, ['authed']);
+export default withAuth(DashboardBankPage, ['authed']);
 
-function DashboardUserPage() {
+function DashboardBankPage() {
+    const tokens = getToken();
     const {
-        data: cctvResponse,
+        data: bankResponse,
         isLoading
-    } = useQuery<ApiReturn<DashboardUser[]>>({ queryKey: ['/cctv'] });
+    } = useQuery<ApiReturn<Bank[]>>({ queryKey: ['/bank'] });
 
-    const columns: ColumnDef<DashboardUser>[] = [
+    const columns: ColumnDef<Bank>[] = [
         {
             accessorKey: 'no',
             header: 'No',
             cell: props => <span>{props.row.index + 1}</span>,
         },
         {
-            accessorKey: 'classs',
-            header: 'Object',
+            accessorKey: 'name',
+            header: 'Name',
             cell: props => <span>{`${props.getValue()}`}</span>,
             filterFn: (row, _id, value) => {
                 return value.includes(row.getValue(_id));
             },
         },
         {
-            accessorKey: 'score',
-            header: 'Score',
+            accessorKey: 'branch',
+            header: 'Branch',
+            cell: props => <span>{`${props.getValue()}`}</span>,
+            filterFn: (row, _id, value) => {
+                return value.includes(row.getValue(_id));
+            },
+        },
+        {
+            accessorKey: 'accountNumber',
+            header: 'Account Number',
+            cell: props => <span>{`${props.getValue()}`}</span>,
+            filterFn: (row, _id, value) => {
+                return value.includes(row.getValue(_id));
+            },
+        },
+        {
+            accessorKey: 'balance',
+            header: 'Balance',
             cell: props => <span>{`${props.getValue()}`}</span>,
             filterFn: (row, _id, value) => {
                 return value.includes(row.getValue(_id));
@@ -49,10 +62,10 @@ function DashboardUserPage() {
         },
         {
             accessorKey: 'createdAt',
-            header: 'Waktu',
+            header: 'Created At',
             cell: (info) => {
-                const waktu_cctv = info.row.original.createdAt;
-                if (!waktu_cctv) {
+                const createdAt = info.row.original.createdAt;
+                if (!createdAt) {
                     return (
                         <Typography
                             as='td'
@@ -64,11 +77,10 @@ function DashboardUserPage() {
                         </Typography>
                     );
                 } else {
-                    const waktuLengkap = waktu_cctv.toString();
-                    const tanggal = waktuLengkap.split('T')[0];
-                    const Jam = waktuLengkap.split('T')[1].split('.')[0];
-                    const sliceDecimal = Jam.slice(0);
-                    const waktuAkhir = `${tanggal} - ${sliceDecimal}`;
+                    const dateTime = createdAt.toString();
+                    const date = dateTime.split('T')[0];
+                    const time = dateTime.split('T')[1].split('.')[0];
+                    const formattedTime = `${date} - ${time}`;
 
                     return (
                         <Typography
@@ -77,7 +89,7 @@ function DashboardUserPage() {
                                 'truncate whitespace-nowrap py-3 lg:text-[16px] text-[14px]'
                             )}
                         >
-                            {waktuAkhir}
+                            {formattedTime}
                         </Typography>
                     );
                 }
@@ -89,25 +101,29 @@ function DashboardUserPage() {
     ];
 
     return (
-        <DashboardLayout>
-            <section className='w-full bg-typo-surface px-10 py-10 min-h-screen flex flex-col gap-4 items-start'>
-                <Typography variant='btn' font='epilogue' weight='medium'>
-                    KEL 4 JAYA 3x
-                </Typography>
-                <Typography as='h5' variant='h5' font='epilogue' weight='semibold'>
-                    CCTV DASHBOARD
-                </Typography>
+        (tokens !== undefined ? (
+            <DashboardLayout>
+                <section className='w-full bg-typo-surface px-10 py-10 min-h-screen flex flex-col gap-4 items-start'>
+                    <Typography variant='btn' font='epilogue' weight='medium'>
+                        BANK DASHBOARD
+                    </Typography>
+                    <Typography as='h5' variant='h5' font='epilogue' weight='semibold'>
+                        Bank Data Management
+                    </Typography>
 
-                <Table
-                    className='text-black'
-                    data={cctvResponse?.data ?? []}
-                    columns={columns}
-                    isLoading={isLoading}
-                    withFilter
-                    withPaginationControl
-                    withPaginationCount
-                />
-            </section>
-        </DashboardLayout>
+                    <Table
+                        className='text-black'
+                        data={bankResponse?.data ?? []}
+                        columns={columns}
+                        isLoading={isLoading}
+                        withFilter
+                        withPaginationControl
+                        withPaginationCount
+                    />
+                </section>
+            </DashboardLayout>
+        ) : (
+            <></>
+        ))
     );
 }

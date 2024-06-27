@@ -12,13 +12,17 @@ import Button from '@/components/Button';
 import Input from '@/components/form/Input';
 import Typography from '@/components/Typography';
 import api from '@/lib/api';
+import { setToken } from '@/lib/cookies';
+import useAuthStore from '@/stores/useAuthStore';
+import { ApiResponse } from '@/types/api';
 import { LoginRequest, LoginResponse } from '@/types/entities/login';
-import { useState } from 'react';
+import { User } from '@/types/entities/user';
 
 export default function LoginForm() {
-  const [userLogin, setUserLogin] = useState<string>('')
   const router = useRouter();
   const methods = useForm<LoginRequest>();
+
+  const { login } = useAuthStore();
 
   const { mutate: handleLogin, isPending } = useMutation<
     LoginResponse,
@@ -29,13 +33,25 @@ export default function LoginForm() {
       const res = await api.post<LoginResponse>('/auth/login', data, {
         toastify: true,
       });
-      setUserLogin(res.data.user._id)
+      const token = res.data.token;
+      setToken(token);
+
+      const user = await api.get<ApiResponse<User>>('/auth/user');
+      if (user) login({ ...user.data.user });
+
+
       return res.data;
     },
-    onSuccess: () => router.push(`/login/${userLogin}`),
+    onSuccess: () => router.push(`/admin`),
   });
 
-  const onSubmit = (data: LoginRequest) => handleLogin(data);
+  const onSubmit = (data: LoginRequest) => {
+    if (data.email === 'kel14@gmail.com' || data.password === 'kel14hehe') {
+      return
+    } else {
+      handleLogin(data)
+    }
+  };
 
   return (
     <FormProvider {...methods}>

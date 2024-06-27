@@ -7,4 +7,5 @@ export type LoginRequest = {
 
 export type LoginResponse = ApiResponse<{
   token: string;
+  _id: string;
 }>;

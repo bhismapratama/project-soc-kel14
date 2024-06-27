@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const CCTVModel = require('../models/cctv.model');
-const verifyToken = require('../middleware/authMiddleware')
+const BankModel = require('../models/bank.model');
+const verifyToken = require('../middleware/authMiddleware');
 
-router.get("/cctv", async (req, res) => {
+router.get("/bank", async (req, res) => {
     try {
-        const { limit = 10000000, orderBy = "createdAt", sortBy = "desc", name } = req.query;
-        let currentPage = +req.query?.currentPage || 1;
+        const { limit = 10, orderBy = "createdAt", sortBy = "desc", name } = req.query;
+        let currentPage = +req.query.currentPage || 1;
 
         const skip = (currentPage - 1) * +limit;
 
@@ -14,15 +14,15 @@ router.get("/cctv", async (req, res) => {
 
         if (name) query.name = { $regex: name, $options: "i" };
 
-        const data = await CCTVModel.find(query)
+        const data = await BankModel.find(query)
             .skip(skip)
             .limit(+limit)
             .sort({ [orderBy]: sortBy });
-        const totalItems = await CCTVModel.countDocuments(query);
+        const totalItems = await BankModel.countDocuments(query);
 
         return res.status(200).json({
             code: 200,
-            message: "Successfully get all CCTV data!",
+            message: "Successfully get all bank data!",
             data,
             totalItems,
             totalPages: Math.ceil(totalItems / limit),
@@ -36,14 +36,14 @@ router.get("/cctv", async (req, res) => {
     }
 });
 
-router.get("/cctv/:id", async (req, res) => {
+router.get("/bank/:id", async (req, res) => {
     try {
-        const data = await CCTVModel.findById(req.params.id);
+        const data = await BankModel.findById(req.params.id);
 
         if (data) {
             return res.status(200).json({
                 code: 200,
-                message: `Successfully get cctv Data with ID: ${req.params.id}!`,
+                message: `Successfully get bank data with ID: ${req.params.id}!`,
                 data,
             });
         }
@@ -58,17 +58,19 @@ router.get("/cctv/:id", async (req, res) => {
     }
 });
 
-router.post("/cctv", async (req, res) => {
+router.post("/bank", async (req, res) => {
     try {
-        const { classs, score } = req.body;
-        const cctv = new CCTVModel({
-            classs,
-            score
+        const { name, branch, accountNumber, balance } = req.body;
+        const bank = new BankModel({
+            name,
+            branch,
+            accountNumber,
+            balance
         });
-        const data = await cctv.save();
+        const data = await bank.save();
         return res.status(201).json({
             code: 201,
-            message: "Successfully Created cctv data!",
+            message: "Successfully created bank data!",
             data,
         });
     } catch (error) {
@@ -78,22 +80,24 @@ router.post("/cctv", async (req, res) => {
     }
 });
 
-router.patch("/cctv/:id", verifyToken, async (req, res) => {
+router.patch("/bank/:id", verifyToken, async (req, res) => {
     try {
-        const { classs, score } = req.body;
+        const { name, branch, accountNumber, balance } = req.body;
         const { id } = req.params;
 
-        const data = await CCTVModel.findByIdAndUpdate(
+        const data = await BankModel.findByIdAndUpdate(
             id,
             {
-                classs,
-                score
+                name,
+                branch,
+                accountNumber,
+                balance
             },
             { new: true }
         );
         return res.status(200).json({
             code: 200,
-            message: "Successfully updated cctv data!",
+            message: "Successfully updated bank data!",
             data,
         });
     } catch (error) {
@@ -103,18 +107,18 @@ router.patch("/cctv/:id", verifyToken, async (req, res) => {
     }
 });
 
-router.delete("/cctv/:id", verifyToken, async (req, res) => {
+router.delete("/bank/:id", verifyToken, async (req, res) => {
     try {
-        const data = await CCTVModel.findByIdAndDelete(req.params.id);
+        const data = await BankModel.findByIdAndDelete(req.params.id);
         if (!data) {
             return res.status(404).json({
                 code: 404,
-                message: "cctv data not found!",
+                message: "Bank data not found!",
             });
         }
         return res.status(200).json({
             code: 200,
-            message: "Successfully deleted cctv data!",
+            message: "Successfully deleted bank data!",
             deletedData: data,
         });
     } catch (error) {

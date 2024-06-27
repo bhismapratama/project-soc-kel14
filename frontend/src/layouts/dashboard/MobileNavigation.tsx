@@ -50,7 +50,7 @@ export default function MobileNavigation() {
                     alt='avatar'
                   />
                   <Typography variant='c2' className='px-3'>
-                    Kel 4 Jaya
+                    kel 14 Jaya
                   </Typography>
                   <FiChevronDown
                     className='h-5 w-5 flex-shrink-0 text-typo-dark group-hover:text-gray-500'
@@ -71,7 +71,7 @@ export default function MobileNavigation() {
               <Menu.Items className='absolute right-0 mt-4 w-48 z-50 backdrop-blur origin-top-right divide-y divide-gray-200 rounded-md bg-background-liteCream shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
                 <div className='py-3'>
                   <Typography className='text-neutral-1000 text-[14px] flex justify-center' weight='bold'>
-                    Kel 4 Jaya
+                    kel 14 Jaya
                   </Typography>
                 </div>
                 {/* //! Don't forget to adjust UserAction component */}

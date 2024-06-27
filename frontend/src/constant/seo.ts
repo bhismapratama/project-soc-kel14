@@ -4,15 +4,15 @@ import type { Metadata } from 'next';
 
 const config: Metadata = {
   metadataBase: new URL('http://localhost:3000'),
-  title: { default: 'KEL 4', template: '%s | KEL 4' },
+  title: { default: 'kel 14', template: '%s | kel 14' },
   description:
-    'KEL 4',
+    'kel 14',
   openGraph: {
     url: 'http://localhost:3000',
-    title: 'KEL 4',
+    title: 'kel 14',
     description:
-      'KEL 4',
-    siteName: 'KEL 4',
+      'kel 14',
+    siteName: 'kel 14',
     images: [{ url: '/images/og.jpeg' }],
     type: 'website',
     locale: 'in_ID',
@@ -20,13 +20,13 @@ const config: Metadata = {
   twitter: {
     card: 'summary_large_image',
     creator: '@kel_4',
-    title: 'KEL 4',
+    title: 'kel 14',
     description:
-      'KEL 4',
+      'kel 14',
     site: 'http://localhost:3000',
     images: [{ url: '/images/og.jpeg' }],
   },
-  keywords: ['KEL 4'],
+  keywords: ['kel 14'],
   robots: 'index, follow',
   icons: [
     {
